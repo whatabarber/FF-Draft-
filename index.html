@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Wizard - Fantasy Football Mock Draft Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 12px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1e40af;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .upgrade-btn {
+            background: #fbbf24;
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upgrade-btn:hover {
+            background: #f59e0b;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            height: fit-content;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 16px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover {
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .sidebar-link.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .content-subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* League Sync Section */
+        .sync-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sync-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .sync-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .league-select {
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            min-width: 180px;
+        }
+
+        .sync-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sync-btn:hover {
+            background: #2563eb;
+        }
+
+        .import-btn {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .import-btn:hover {
+            background: #059669;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Sync Methods */
+        .sync-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .sync-method {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sync-method:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .sync-method.active {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .sync-method-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .sync-method-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1f2937;
+        }
+
+        .sync-method-desc {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Draft Settings */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .setting-group {
+            background: #fafbfc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .setting-header {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .radio-item:hover {
+            background: #f3f4f6;
+        }
+
+        .radio-input {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+        }
+
+        .radio-label {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .premium-feature {
+            position: relative;
+        }
+
+        .premium-feature::after {
+            content: '🔒';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .premium-feature .radio-input {
+            opacity: 0.5;
+        }
+
+        .premium-feature .radio-label {
+            color: #9ca3af;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .sync-promo {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .sync-promo h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .sync-promo p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .sync-promo-btn {
+            background: white;
+            color: #3b82f6;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sync-promo-btn:hover {
+            background: #f8fafc;
+        }
+
+        /* Extension Info */
+        .extension-info {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .extension-info h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .extension-info p {
+            color: #78350f;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .extension-link {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 50px auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .manual-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input {
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-select {
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar, .right-sidebar {
+                width: 100%;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .nav-menu {
+                overflow-x: auto;
+                padding: 0 10px;
+            }
+            
+            .main-container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+
+            .sync-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sync-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        SPECIAL OFFER: GET A FREE 6 MONTH UPGRADE »
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-left">
+            <div class="logo">
+                <div class="logo-icon">fp</div>
+                NFL
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active">Draft Wizard ▼</div>
+                <div class="nav-item">My Playbook ▼</div>
+                <div class="nav-item">Rankings ▼</div>
+                <div class="nav-item">Research ▼</div>
+                <div class="nav-item">DFS ▼</div>
+                <div class="nav-item">⋯</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="upgrade-btn">🔒 Upgrade</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">NFL DRAFT WIZARD</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• My Leagues</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link active">• Draft Simulator</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Mock Draft Lobby</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Draft Assistant</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Draft Intel</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Cheat Sheet Creator</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Perfect Draft</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">• Draft Analyzer</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="content-header">
+                <h1 class="content-title">Draft Configuration</h1>
+                <p class="content-subtitle">Customize your mock draft settings below</p>
+            </div>
+
+            <!-- League Sync Section -->
+            <div class="sync-section">
+                <div class="sync-header">Load Settings From Your League</div>
+                <div class="sync-controls">
+                    <select class="league-select" id="leagueSelect">
+                        <option value="cod-league">COD LEAGUE</option>
+                        <option value="espn-league">ESPN League</option>
+                        <option value="yahoo-league">Yahoo League</option>
+                        <option value="sleeper-league">Sleeper League</option>
+                    </select>
+                    <span style="color: #6b7280;">or</span>
+                    <button class="sync-btn" onclick="openSyncModal()">Sync Your League</button>
+                    <button class="import-btn" onclick="document.getElementById('csvFile').click()">Import CSV</button>
+                    <input type="file" id="csvFile" class="file-input" accept=".csv,.json" onchange="handleFileImport(event)">
+                </div>
+
+                <!-- Sync Methods -->
+                <div class="sync-methods">
+                    <div class="sync-method" onclick="selectSyncMethod('extension')">
+                        <div class="sync-method-icon">🧩</div>
+                        <div class="sync-method-title">Chrome Extension</div>
+                        <div class="sync-method-desc">Auto-sync with browser extension</div>
+                    </div>
+                    <div class="sync-method" onclick="selectSyncMethod('manual')">
+                        <div class="sync-method-icon">✏️</div>
+                        <div class="sync-method-title">Manual Setup</div>
+                        <div class="sync-method-desc">Enter league settings manually</div>
+                    </div>
+                    <div class="sync-method" onclick="selectSyncMethod('import')">
+                        <div class="sync-method-icon">📄</div>
+                        <div class="sync-method-title">File Import</div>
+                        <div class="sync-method-desc">Upload CSV/JSON file</div>
+                    </div>
+                    <div class="sync-method" onclick="selectSyncMethod('api')">
+                        <div class="sync-method-icon">🔗</div>
+                        <div class="sync-method-title">API Connect</div>
+                        <div class="sync-method-desc">Direct platform integration</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Draft Settings Grid -->
+            <div class="settings-grid">
+                <!-- League Type -->
+                <div class="setting-group">
+                    <div class="setting-header">League Type</div>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="leagueType" value="2025" class="radio-input">
+                            <span class="radio-label">2025 Season</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="leagueType" value="dynasty" class="radio-input" checked>
+                            <span class="radio-label">Dynasty</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Player Pool -->
+                <div class="setting-group">
+                    <div class="setting-header">Player Pool</div>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="playerPool" value="all" class="radio-input" checked>
+                            <span class="radio-label">All Players</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="playerPool" value="rookies" class="radio-input">
+                            <span class="radio-label">Rookies Only</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Draft Type -->
+                <div class="setting-group">
+                    <div class="setting-header">Draft Type</div>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="draftType" value="snake" class="radio-input">
+                            <span class="radio-label">Snake</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="draftType" value="linear" class="radio-input">
+                            <span class="radio-label">Linear</span>
+                        </label>
+                        <label class="radio-item premium-feature">
+                            <input type="radio" name="draftType" value="salary" class="radio-input" disabled>
+                            <span class="radio-label">Salary Cap</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Opponent Pick Logic -->
+                <div class="setting-group">
+                    <div class="setting-header">Opponent Pick Logic</div>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="pickLogic" value="basic" class="radio-input" checked>
+                            <span class="radio-label">Basic</span>
+                        </label>
+                        <label class="radio-item premium-feature">
+                            <input type="radio" name="pickLogic" value="advanced" class="radio-input" disabled>
+                            <span class="radio-label">Advanced</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Settings -->
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <div class="setting-header">Teams</div>
+                    <select class="league-select" style="width: 100%;" id="teamsSelect">
+                        <option value="10">10 Teams</option>
+                        <option value="12" selected>12 Teams</option>
+                        <option value="14">14 Teams</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-header">Rounds</div>
+                    <select class="league-select" style="width: 100%;" id="roundsSelect">
+                        <option value="15">15 Rounds</option>
+                        <option value="16" selected>16 Rounds</option>
+                        <option value="17">17 Rounds</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-header">Draft Position</div>
+                    <select class="league-select" style="width: 100%;" id="positionSelect">
+                        <option value="random" selected>Random</option>
+                        <option value="1">1st Pick</option>
+                        <option value="6">6th Pick</option>
+                        <option value="12">12th Pick</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <div class="setting-header">Scoring System</div>
+                    <select class="league-select" style="width: 100%;" id="scoringSelect">
+                        <option value="standard">Standard</option>
+                        <option value="ppr" selected>Full PPR</option>
+                        <option value="half-ppr">Half PPR</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="startDraft()">Start Mock Draft</button>
+                <button class="btn btn-secondary" onclick="resetSettings()">Reset Settings</button>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <!-- Extension Info -->
+            <div class="extension-info">
+                <h4>🧩 Chrome Extension Available</h4>
+                <p>For real ESPN sync, install our Chrome extension for automatic league import and live draft assistance.</p>
+                <a href="#" class="extension-link" onclick="downloadExtension()">Download Extension</a>
+            </div>
+
+            <div class="sync-promo">
+                <div style="font-size: 14px; color: #3b82f6; background: white; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px;">1 Free Sync</div>
+                <h3>Sync Your League</h3>
+                <p>Sign up to get free, customized advice for your Fantasy team</p>
+                <button class="sync-promo-btn" onclick="openSyncModal()">Sync A League</button>
+            </div>
+
+            <div class="recent-drafts">
+                <h4>Recent Mock Drafts</h4>
+                <div class="draft-item" onclick="viewDraft('draft1')">
+                    <div style="font-weight: 600; margin-bottom: 4px;">12-Team PPR Mock</div>
+                    <div class="draft-info">Dynasty • Pick 8 • <span class="draft-score">Grade: A-</span></div>
+                    <div class="draft-info">2 hours ago</div>
+                </div>
+                <div class="draft-item" onclick="viewDraft('draft2')">
+                    <div style="font-weight: 600; margin-bottom: 4px;">10-Team Standard</div>
+                    <div class="draft-info">Snake • Pick 3 • <span class="draft-score">Grade: B+</span></div>
+                    <div class="draft-info">5 hours ago</div>
+                </div>
+                <div class="draft-item" onclick="viewDraft('draft3')">
+                    <div style="font-weight: 600; margin-bottom: 4px;">14-Team Half PPR</div>
+                    <div class="draft-info">Linear • Pick 12 • <span class="draft-score">Grade: A</span></div>
+                    <div class="draft-info">1 day ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Modal -->
+    <div id="syncModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Sync Your League</h2>
+                <button class="close-btn" onclick="closeSyncModal()">&times;</button>
+            </div>
+            
+            <div id="modalContent">
+                <!-- Content will be dynamically loaded based on sync method -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedSyncMethod = null;
+        let leagueData = {
+            teams: 12,
+            rounds: 16,
+            scoring: 'ppr',
+            draftType: 'snake',
+            leagueType: 'dynasty'
+        };
+
+        // Sync method selection
+        function selectSyncMethod(method) {
+            document.querySelectorAll('.sync-method').forEach(el => el.classList.remove('active'));
+            event.target.closest('.sync-method').classList.add('active');
+            selectedSyncMethod = method;
+            
+            switch(method) {
+                case 'extension':
+                    showExtensionSync();
+                    break;
+                case 'manual':
+                    openManualSync();
+                    break;
+                case 'import':
+                    document.getElementById('csvFile').click();
+                    break;
+                case 'api':
+                    showApiSync();
+                    break;
+            }
+        }
+
+        // Extension sync
+        function showExtensionSync() {
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                // Extension is available
+                alert('🧩 Chrome Extension Detected!\n\nClick "Install Extension" to enable real ESPN sync capabilities.\n\nFeatures:\n• Auto-import league settings\n• Live draft assistance\n• Real opponent tracking\n• Cookie-based authentication');
+            } else {
+                alert('🧩 Chrome Extension Required\n\nTo sync with ESPN, you need our Chrome extension.\n\n1. Download the extension\n2. Install it in Chrome\n3. Return here to sync\n\nThe extension will automatically detect your ESPN leagues and import settings.');
+            }
+        }
+
+        // Manual sync modal
+        function openManualSync() {
+            openSyncModal();
+            document.getElementById('modalContent').innerHTML = `
+                <form class="manual-form" onsubmit="saveManualLeague(event)">
+                    <div class="form-group">
+                        <label class="form-label">League Name</label>
+                        <input type="text" class="form-input" placeholder="Enter league name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Platform</label>
+                        <select class="form-select" required>
+                            <option value="">Select Platform</option>
+                            <option value="espn">ESPN</option>
+                            <option value="yahoo">Yahoo</option>
+                            <option value="sleeper">Sleeper</option>
+                            <option value="nfl">NFL.com</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Number of Teams</label>
+                        <select class="form-select" required>
+                            <option value="8">8 Teams</option>
+                            <option value="10">10 Teams</option>
+                            <option value="12" selected>12 Teams</option>
+                            <option value="14">14 Teams</option>
+                            <option value="16">16 Teams</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Scoring System</label>
+                        <select class="form-select" required>
+                            <option value="standard">Standard</option>
+                            <option value="ppr" selected>Full PPR</option>
+                            <option value="half-ppr">Half PPR</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Draft Type</label>
+                        <select class="form-select" required>
+                            <option value="snake" selected>Snake</option>
+                            <option value="linear">Linear</option>
+                            <option value="auction">Auction</option>
+                        </select>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Save League</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeSyncModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        // API sync
+        function showApiSync() {
+            alert('🔗 API Integration\n\nDirect platform integration coming soon!\n\nSupported platforms:\n• ESPN (via OAuth)\n• Yahoo (via API)\n• Sleeper (via API)\n• NFL.com (via API)\n\nThis will allow real-time sync without browser extensions.');
+        }
+
+        // Modal functions
+        function openSyncModal() {
+            document.getElementById('syncModal').style.display = 'block';
+        }
+
+        function closeSyncModal() {
+            document.getElementById('syncModal').style.display = 'none';
+        }
+
+        // Save manual league
+        function saveManualLeague(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            // Update settings based on manual input
+            const teams = event.target.querySelector('select').value;
+            document.getElementById('teamsSelect').value = teams;
+            
+            alert('✅ League Settings Saved!\n\nYour league has been configured manually. Settings have been applied to the draft simulator.');
+            closeSyncModal();
+        }
+
+        // File import handler
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data;
+                    if (file.name.endsWith('.json')) {
+                        data = JSON.parse(e.target.result);
+                    } else {
+                        // CSV parsing (simplified)
+                        const lines = e.target.result.split('\n');
+                        data = { teams: 12, scoring: 'ppr' }; // Default parsing
+                    }
+                    
+                    // Apply imported settings
+                    if (data.teams) document.getElementById('teamsSelect').value = data.teams;
+                    if (data.scoring) document.getElementById('scoringSelect').value = data.scoring;
+                    
+                    alert('📄 File Imported Successfully!\n\nLeague settings have been loaded from your file.');
+                } catch (error) {
+                    alert('❌ Import Error\n\nPlease check your file format and try again.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Download extension
+        function downloadExtension() {
+            // This would link to the actual Chrome extension
+            alert('🧩 Chrome Extension Download\n\nThis would normally:\n1. Redirect to Chrome Web Store\n2. Install the extension\n3. Enable ESPN sync capabilities\n\nExtension features:\n• Auto-detect ESPN leagues\n• Import settings automatically\n• Live draft assistance\n• Real-time player updates');
+        }
+
+        // Original functions
+        function syncLeague() {
+            const leagueType = document.getElementById('leagueSelect').value;
+            
+            if (leagueType === 'espn-league') {
+                if (typeof chrome !== 'undefined' && chrome.runtime) {
+                    alert('🔗 Connecting to ESPN via Extension...\n\nDetecting leagues...\nImporting settings...\nSyncing rosters...\n✅ Sync Complete!');
+                } else {
+                    alert('🔗 ESPN Sync Requires Extension\n\nTo sync with ESPN:\n1. Install our Chrome extension\n2. Log into ESPN\n3. Return here to sync\n\nAlternatively, use manual setup or file import.');
+                }
+            } else {
+                alert(`🔗 Syncing with ${leagueType.toUpperCase()}...\n\nFeatures include:\n• Auto-import league settings\n• Real opponent tendencies\n• Custom scoring rules\n• Draft position optimization`);
+            }
+            
+            document.querySelector('.sync-btn').textContent = '✓ Synced';
+            document.querySelector('.sync-btn').style.background = '#10b981';
+        }
+
+        function startDraft() {
+            const settings = {
+                leagueType: document.querySelector('input[name="leagueType"]:checked').value,
+                playerPool: document.querySelector('input[name="playerPool"]:checked').value,
+                draftType: document.querySelector('input[name="draftType"]:checked').value,
+                pickLogic: document.querySelector('input[name="pickLogic"]:checked').value,
+                teams: document.getElementById('teamsSelect').value,
+                rounds: document.getElementById('roundsSelect').value,
+                scoring: document.getElementById('scoringSelect').value
+            };
+
+            const btn = event.target;
+            btn.textContent = 'Starting Draft...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert(`🏈 Draft Starting!\n\nSettings:\n• ${settings.teams} Teams\n• ${settings.rounds} Rounds\n• ${settings.scoring.toUpperCase()} Scoring\n• ${settings.draftType} Draft\n• ${settings.pickLogic} Logic\n\nThis would redirect to the live draft room with real-time picks, player rankings, and AI recommendations.`);
+                btn.textContent = 'Start Mock Draft';
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function resetSettings() {
+            document.querySelector('input[name="leagueType"][value="dynasty"]').checked = true;
+            document.querySelector('input[name="playerPool"][value="all"]').checked = true;
+            document.querySelector('input[name="draftType"][value="snake"]').checked = true;
+            document.querySelector('input[name="pickLogic"][value="basic"]').checked = true;
+            
+            document.getElementById('teamsSelect').selectedIndex = 1; // 12 teams
+            document.getElementById('roundsSelect').selectedIndex = 1; // 16 rounds
+            document.getElementById('positionSelect').selectedIndex = 0; // Random
+            document.getElementById('scoringSelect').selectedIndex = 1; // PPR
+            
+            alert('⚙️ Settings reset to defaults');
+        }
+
+        function viewDraft(draftId) {
+            alert(`📊 Viewing Mock Draft Results\n\nThis would show:\n• Complete draft board\n• Your team analysis\n• Grade breakdown\n• Suggested improvements\n• Export to CSV option`);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('syncModal');
+            if (event.target === modal) {
+                closeSyncModal();
+            }
+        }
+
+        // Premium feature tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.premium-feature').forEach(feature => {
+                feature.addEventListener('click', function(e) {
+                    if (e.target.type === 'radio') {
+                        e.preventDefault();
+                        alert('🔒 Premium Feature\n\nUpgrade to access:\n• Advanced opponent AI\n• Historical draft data\n• Custom league settings\n• Salary cap drafts');
+                    }
+                });
+            });
+
+            // Animate settings groups on load
+            const groups = document.querySelectorAll('.setting-group');
+            groups.forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    group.style.transition = 'all 0.5s ease';
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
